@@ -18,9 +18,9 @@ class application:
         self.ind = appindicator.Indicator ("Places", "user-home", appindicator.CATEGORY_APPLICATION_STATUS)
         self.ind.set_status (appindicator.STATUS_ACTIVE)        
 
-        self.menu()
+        self.update_menu()
 
-    def menu(self, widget = None, data = None):
+    def update_menu(self, widget = None, data = None):
         try:
             bookmarks_path = os.path.join(os.path.expanduser('~'), '.gtk-bookmarks')
             bookmarks = open(bookmarks_path).readlines()
@@ -63,7 +63,7 @@ class application:
 
         # Refresh menu item
         item = gtk.MenuItem('Refresh')
-        item.connect("activate", self.menu)
+        item.connect("activate", self.update_menu)
         item.show()
         menu.append(item)
 
@@ -86,7 +86,8 @@ class application:
 
     # Open clicked bookmark
     def on_bookmark_click(self, widget, path):
-        subprocess.Popen('/usr/bin/xdg-open %s' % path, shell = True)
+#       subprocess.Popen('/usr/bin/xdg-open %s' % path, shell = True)
+        subprocess.Popen('/usr/bin/nautilus %s' % path, shell = True)
 
     # Show about dialog
     def on_about_click(self, widget, data = None):
