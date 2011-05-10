@@ -6,24 +6,28 @@
 
 import os
 import gtk
+import gio
 import signal
 import subprocess
 import appindicator
 
 APP_NAME = 'indicator-places'
-APP_VERSION = '0.2'
+APP_VERSION = '0.3'
 
-class application:
+class IndicatorPlaces:
+    BOOKMARKS_PATH = os.getenv('HOME') + '/.gtk-bookmarks'
+
     def __init__(self):
         self.ind = appindicator.Indicator ("Places", "user-home", appindicator.CATEGORY_APPLICATION_STATUS)
+#       self.ind.set_label("Places")
         self.ind.set_status (appindicator.STATUS_ACTIVE)        
 
         self.update_menu()
 
+    # This methind creates a menu
     def update_menu(self, widget = None, data = None):
         try:
-            bookmarks_path = os.path.join(os.path.expanduser('~'), '.gtk-bookmarks')
-            bookmarks = open(bookmarks_path).readlines()
+            bookmarks = open(self.BOOKMARKS_PATH).readlines()
         except IOError:
             bookmarks = []        
 
@@ -34,12 +38,10 @@ class application:
         # Home folder menu item
         item = gtk.MenuItem("Home folder")
         item.connect("activate", self.on_bookmark_click, '~')
-        item.show()
         menu.append(item)
 
         # Show separator
         item = gtk.SeparatorMenuItem()
-        item.show()
         menu.append(item)
 
         # Populate bookmarks menu items
@@ -50,39 +52,27 @@ class application:
                 label = os.path.basename(os.path.normpath(path))
 
             item = gtk.MenuItem(label)
-            item.connect("activate", self.on_bookmark_click, path) # run open_place function on item activate
-            item.show() # show the item
+            item.connect("activate", self.on_bookmark_click, path)
 
             # Append the item to menu
             menu.append(item)
 
         # Show separator
         item = gtk.SeparatorMenuItem()
-        item.show()
-        menu.append(item)
-
-        # Refresh menu item
-        item = gtk.MenuItem('Refresh')
-        item.connect("activate", self.update_menu)
-        item.show()
-        menu.append(item)
-
-        # Show separator
-        item = gtk.SeparatorMenuItem()
-        item.show()
         menu.append(item)
 
         # About menu item
         item = gtk.MenuItem('About')
         item.connect("activate", self.on_about_click)
-        item.show()
         menu.append(item)
 
         # Quit menu item
         item = gtk.MenuItem("Quit")
         item.connect("activate", gtk.main_quit)
-        item.show()
         menu.append(item)
+
+        # Show the menu
+        menu.show_all()
 
     # Open clicked bookmark
     def on_bookmark_click(self, widget, path):
@@ -100,11 +90,23 @@ class application:
         about.set_logo_icon_name('user-home')
         about.run()
         about.hide()
+        
+    def on_bookmarks_changed(self, filemonitor, file, other_file, event_type):
+        if event_type == gio.FILE_MONITOR_EVENT_CHANGES_DONE_HINT:
+            print 'Bookmarks changed, updating menu...'
+            self.update_menu()
 
 if __name__ == "__main__":
     # Catch CTRL-C
     signal.signal(signal.SIGINT, lambda signal, frame: gtk.main_quit())
 
-    # Run the app
-    application()
+    # Run the indicator
+    i = IndicatorPlaces()
+    
+    # Monitor bookmarks changes 
+    file = gio.File(i.BOOKMARKS_PATH)
+    monitor = file.monitor_file()
+    monitor.connect("changed", i.on_bookmarks_changed)            
+    
+    # Main gtk loop
     gtk.main()
