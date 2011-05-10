@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 #
 # Very simple app-indicator, shows gtk-bookmarsk (aka places)
 # Author: Alex Simenduev <shamil.si@gmail.com>
@@ -19,7 +20,7 @@ class IndicatorPlaces:
 
     def __init__(self):
         self.ind = appindicator.Indicator ("Places", "user-home", appindicator.CATEGORY_APPLICATION_STATUS)
-#       self.ind.set_label("Places")
+        self.ind.set_label("Places")
         self.ind.set_status (appindicator.STATUS_ACTIVE)        
 
         self.update_menu()
@@ -85,8 +86,9 @@ class IndicatorPlaces:
         about.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         about.set_program_name(APP_NAME)
         about.set_version(APP_VERSION)
-        about.set_authors(["Alex Simenduev <shamil.si@gmail.com>"])
-        about.set_website("http://github.com/shamil/indicator-places")
+        about.set_comments("A very simple indicator which shows GTK Bookmarks")
+        about.set_copyright("Copyright 2011 © Alex Simenduev <shamil.si@gmail.com>")        
+        about.set_website("github.com/shamil/indicator-places")
         about.set_logo_icon_name('user-home')
         about.run()
         about.hide()
