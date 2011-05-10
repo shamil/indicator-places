@@ -19,7 +19,7 @@ class IndicatorPlaces:
     BOOKMARKS_PATH = os.getenv('HOME') + '/.gtk-bookmarks'
 
     def __init__(self):
-        self.ind = appindicator.Indicator ("Places", "user-home", appindicator.CATEGORY_APPLICATION_STATUS)
+        self.ind = appindicator.Indicator ("Places", "nautilus", appindicator.CATEGORY_APPLICATION_STATUS)
         self.ind.set_label("Places")
         self.ind.set_status (appindicator.STATUS_ACTIVE)        
 
@@ -38,7 +38,12 @@ class IndicatorPlaces:
 
         # Home folder menu item
         item = gtk.MenuItem("Home folder")
-        item.connect("activate", self.on_bookmark_click, '~')
+        item.connect("activate", self.on_bookmark_click, os.getenv('HOME'))
+        menu.append(item)
+
+        # Computer menu item
+        item = gtk.MenuItem("Computer")
+        item.connect("activate", self.on_bookmark_click, 'computer:///')
         menu.append(item)
 
         # Show separator
@@ -61,7 +66,7 @@ class IndicatorPlaces:
         # Show separator
         item = gtk.SeparatorMenuItem()
         menu.append(item)
-
+        
         # About menu item
         item = gtk.MenuItem('About')
         item.connect("activate", self.on_about_click)
@@ -79,7 +84,7 @@ class IndicatorPlaces:
     def on_bookmark_click(self, widget, path):
 #       subprocess.Popen('/usr/bin/xdg-open %s' % path, shell = True)
         subprocess.Popen('/usr/bin/nautilus %s' % path, shell = True)
-
+        
     # Show about dialog
     def on_about_click(self, widget, data = None):
         about = gtk.AboutDialog()
@@ -89,7 +94,7 @@ class IndicatorPlaces:
         about.set_comments("A very simple indicator which shows GTK Bookmarks")
         about.set_copyright("Copyright 2011 © Alex Simenduev <shamil.si@gmail.com>")        
         about.set_website("github.com/shamil/indicator-places")
-        about.set_logo_icon_name('user-home')
+        about.set_logo_icon_name('nautilus')
         about.run()
         about.hide()
         
