@@ -19,9 +19,9 @@ class IndicatorPlaces:
     BOOKMARKS_PATH = os.getenv('HOME') + '/.gtk-bookmarks'
 
     def __init__(self):
-        self.ind = appindicator.Indicator ("Places", "nautilus", appindicator.CATEGORY_APPLICATION_STATUS)
+        self.ind = appindicator.Indicator("Places", "nautilus", appindicator.CATEGORY_APPLICATION_STATUS)
         self.ind.set_label("Places")
-        self.ind.set_status (appindicator.STATUS_ACTIVE)        
+        self.ind.set_status(appindicator.STATUS_ACTIVE)        
 
         self.update_menu()
 
@@ -43,7 +43,12 @@ class IndicatorPlaces:
 
         # Computer menu item
         item = gtk.MenuItem("Computer")
-        item.connect("activate", self.on_bookmark_click, 'computer:///')
+        item.connect("activate", self.on_bookmark_click, 'computer:')
+        menu.append(item)
+
+        # Computer menu item
+        item = gtk.MenuItem("Network")
+        item.connect("activate", self.on_bookmark_click, 'computer:')
         menu.append(item)
 
         # Show separator
