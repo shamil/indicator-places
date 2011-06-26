@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Very simple app-indicator, shows gtk-bookmarsk (aka places)
+# Very simple app-indicator, shows gtk-bookmarks (aka places)
 # Author: Alex Simenduev <shamil.si@gmail.com>
 #
 
@@ -36,19 +36,15 @@ class IndicatorPlaces:
     
     # Bookmarks need a special handling as some of them have a special icon
     # TODO: Find a better way to lookup the associated special icons
-    def lookup_bookmark_icon(self, name):
-        if name == "Documents":
-            return "folder-documents"
-        if name == "Music":
-            return "folder-music"
-        if name == "Pictures":
-            return "folder-pictures"
-        if name == "Videos":
-            return "folder-videos"
-        if name == "Downloads":
-            return "folder-downloads"
+    def lookup_bookmark_icon(self, name):     
+        if   name == "Documents"    : icon_name = "folder-documents"
+        elif name == "Downloads"    : icon_name = "folder-downloads"
+        elif name == "Music"        : icon_name = "folder-music"
+        elif name == "Pictures"     : icon_name = "folder-pictures"
+        elif name == "Videos"       : icon_name = "folder-videos"
+        else                        : icon_name = "folder"
 
-        return "folder"
+        return icon_name
         
     
     # This methind creates a menu
@@ -63,7 +59,7 @@ class IndicatorPlaces:
         self.ind.set_menu(menu)
 
         # Home folder menu item
-        item = self.create_menu_item("Home Folder", "folder-home") 
+        item = self.create_menu_item("Home Folder", "user-home") 
         item.connect("activate", self.on_bookmark_click, os.getenv('HOME'))
         menu.append(item)
 
@@ -74,7 +70,7 @@ class IndicatorPlaces:
 
         # Computer menu item
         item = self.create_menu_item("Network", "folder-remote")
-        item.connect("activate", self.on_bookmark_click, 'computer:')
+        item.connect("activate", self.on_bookmark_click, 'network:')
         menu.append(item)
 
         # Show separator
@@ -88,11 +84,26 @@ class IndicatorPlaces:
             if not label:
                 label = os.path.basename(os.path.normpath(path))
 
-            item = self.create_menu_item(label, self.lookup_bookmark_icon(label))
+            # Try to detect relevant icon                
+            if path.startswith("smb") or path.startswith("ssh") or path.startswith("network"):
+                icon_name = "folder-remote"
+            else:
+                icon_name = self.lookup_bookmark_icon(label)
+
+            item = self.create_menu_item(label, icon_name)
             item.connect("activate", self.on_bookmark_click, path)
 
             # Append the item to menu
             menu.append(item)
+
+        # Show separator
+        item = gtk.SeparatorMenuItem()
+        menu.append(item)
+
+        # Quit menu item
+        item = self.create_menu_item("Quit", "gtk-quit")
+        item.connect("activate", gtk.main_quit)
+        menu.append(item)
 
         # Show the menu
         menu.show_all()
