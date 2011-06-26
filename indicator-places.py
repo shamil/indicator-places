@@ -20,7 +20,6 @@ class IndicatorPlaces:
 
     def __init__(self):
         self.ind = appindicator.Indicator("Places", "nautilus", appindicator.CATEGORY_APPLICATION_STATUS)
-        self.ind.set_label("Places")
         self.ind.set_status(appindicator.STATUS_ACTIVE)        
 
         self.update_menu()
