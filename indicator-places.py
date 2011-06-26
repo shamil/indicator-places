@@ -25,6 +25,33 @@ class IndicatorPlaces:
 
         self.update_menu()
 
+    def create_menu_item(self, label, icon_name):
+        image = gtk.Image()
+        image.set_from_icon_name(icon_name, 24)
+
+        item = gtk.ImageMenuItem()
+        item.set_label(label)
+        item.set_image(image)
+        item.set_always_show_image(True)
+        return item
+    
+    # Bookmarks need a special handling as some of them have a special icon
+    # TODO: Find a better way to lookup the associated special icons
+    def lookup_bookmark_icon(self, name):
+        if name == "Documents":
+            return "folder-documents"
+        if name == "Music":
+            return "folder-music"
+        if name == "Pictures":
+            return "folder-pictures"
+        if name == "Videos":
+            return "folder-videos"
+        if name == "Downloads":
+            return "folder-downloads"
+
+        return "folder"
+        
+    
     # This methind creates a menu
     def update_menu(self, widget = None, data = None):
         try:
@@ -37,17 +64,17 @@ class IndicatorPlaces:
         self.ind.set_menu(menu)
 
         # Home folder menu item
-        item = gtk.MenuItem("Home folder")
+        item = self.create_menu_item("Home Folder", "folder-home") 
         item.connect("activate", self.on_bookmark_click, os.getenv('HOME'))
         menu.append(item)
 
         # Computer menu item
-        item = gtk.MenuItem("Computer")
+        item = self.create_menu_item("Computer", "computer" )
         item.connect("activate", self.on_bookmark_click, 'computer:')
         menu.append(item)
 
         # Computer menu item
-        item = gtk.MenuItem("Network")
+        item = self.create_menu_item("Network", "folder-remote")
         item.connect("activate", self.on_bookmark_click, 'computer:')
         menu.append(item)
 
@@ -59,10 +86,13 @@ class IndicatorPlaces:
         for bm in bookmarks:
             path, label = bm.strip().partition(' ')[::2]
 
+            icon_name = "folder"
+
             if not label:
                 label = os.path.basename(os.path.normpath(path))
+                icon_name = self.lookup_bookmark_icon(label)
 
-            item = gtk.MenuItem(label)
+            item = self.create_menu_item(label, icon_name)
             item.connect("activate", self.on_bookmark_click, path)
 
             # Append the item to menu
