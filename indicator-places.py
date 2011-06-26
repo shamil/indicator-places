@@ -19,7 +19,7 @@ class IndicatorPlaces:
     BOOKMARKS_PATH = os.getenv('HOME') + '/.gtk-bookmarks'
 
     def __init__(self):
-        self.ind = appindicator.Indicator("Places", "nautilus", appindicator.CATEGORY_APPLICATION_STATUS)
+        self.ind = appindicator.Indicator("places", "nautilus", appindicator.CATEGORY_APPLICATION_STATUS)
         self.ind.set_status(appindicator.STATUS_ACTIVE)        
 
         self.update_menu()
@@ -85,13 +85,10 @@ class IndicatorPlaces:
         for bm in bookmarks:
             path, label = bm.strip().partition(' ')[::2]
 
-            icon_name = "folder"
-
             if not label:
                 label = os.path.basename(os.path.normpath(path))
-                icon_name = self.lookup_bookmark_icon(label)
 
-            item = self.create_menu_item(label, icon_name)
+            item = self.create_menu_item(label, self.lookup_bookmark_icon(label))
             item.connect("activate", self.on_bookmark_click, path)
 
             # Append the item to menu
