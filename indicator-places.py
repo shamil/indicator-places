@@ -20,11 +20,37 @@ class IndicatorPlaces:
 
     def __init__(self):
         self.ind = appindicator.Indicator("Places", "nautilus", appindicator.CATEGORY_APPLICATION_STATUS)
-        self.ind.set_label("Places")
         self.ind.set_status(appindicator.STATUS_ACTIVE)        
 
         self.update_menu()
 
+    def create_menu_item(self, label, icon_name):
+        image = gtk.Image()
+        image.set_from_icon_name(icon_name, 24)
+
+        item = gtk.ImageMenuItem()
+        item.set_label(label)
+        item.set_image(image)
+        item.set_always_show_image(True)
+        return item
+    
+    # Bookmarks need a special handling as some of them have a special icon
+    # TODO: Find a better way to lookup the associated special icons
+    def lookup_bookmark_icon(self, name):
+        if name == "Documents":
+            return "folder-documents"
+        if name == "Music":
+            return "folder-music"
+        if name == "Pictures":
+            return "folder-pictures"
+        if name == "Videos":
+            return "folder-videos"
+        if name == "Downloads":
+            return "folder-downloads"
+
+        return "folder"
+        
+    
     # This methind creates a menu
     def update_menu(self, widget = None, data = None):
         try:
@@ -37,17 +63,17 @@ class IndicatorPlaces:
         self.ind.set_menu(menu)
 
         # Home folder menu item
-        item = gtk.MenuItem("Home folder")
+        item = self.create_menu_item("Home Folder", "folder-home") 
         item.connect("activate", self.on_bookmark_click, os.getenv('HOME'))
         menu.append(item)
 
         # Computer menu item
-        item = gtk.MenuItem("Computer")
+        item = self.create_menu_item("Computer", "computer" )
         item.connect("activate", self.on_bookmark_click, 'computer:')
         menu.append(item)
 
         # Computer menu item
-        item = gtk.MenuItem("Network")
+        item = self.create_menu_item("Network", "folder-remote")
         item.connect("activate", self.on_bookmark_click, 'computer:')
         menu.append(item)
 
@@ -59,28 +85,17 @@ class IndicatorPlaces:
         for bm in bookmarks:
             path, label = bm.strip().partition(' ')[::2]
 
+            icon_name = "folder"
+
             if not label:
                 label = os.path.basename(os.path.normpath(path))
+                icon_name = self.lookup_bookmark_icon(label)
 
-            item = gtk.MenuItem(label)
+            item = self.create_menu_item(label, icon_name)
             item.connect("activate", self.on_bookmark_click, path)
 
             # Append the item to menu
             menu.append(item)
-
-        # Show separator
-        item = gtk.SeparatorMenuItem()
-        menu.append(item)
-        
-        # About menu item
-        item = gtk.MenuItem('About')
-        item.connect("activate", self.on_about_click)
-        menu.append(item)
-
-        # Quit menu item
-        item = gtk.MenuItem("Quit")
-        item.connect("activate", gtk.main_quit)
-        menu.append(item)
 
         # Show the menu
         menu.show_all()
@@ -89,19 +104,6 @@ class IndicatorPlaces:
     def on_bookmark_click(self, widget, path):
 #       subprocess.Popen('/usr/bin/xdg-open %s' % path, shell = True)
         subprocess.Popen('/usr/bin/nautilus %s' % path, shell = True)
-        
-    # Show about dialog
-    def on_about_click(self, widget, data = None):
-        about = gtk.AboutDialog()
-        about.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
-        about.set_program_name(APP_NAME)
-        about.set_version(APP_VERSION)
-        about.set_comments("A very simple indicator which shows GTK Bookmarks")
-        about.set_copyright("Copyright 2011 © Alex Simenduev <shamil.si@gmail.com>")        
-        about.set_website("github.com/shamil/indicator-places")
-        about.set_logo_icon_name('nautilus')
-        about.run()
-        about.hide()
         
     def on_bookmarks_changed(self, filemonitor, file, other_file, event_type):
         if event_type == gio.FILE_MONITOR_EVENT_CHANGES_DONE_HINT:
