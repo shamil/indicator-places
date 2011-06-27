@@ -34,18 +34,20 @@ class IndicatorPlaces:
         item.set_always_show_image(True)
         return item
     
-    # Bookmarks need a special handling as some of them have a special icon
-    # TODO: Find a better way to lookup the associated special icons
-    def lookup_bookmark_icon(self, name):     
-        if   name == "Documents"    : icon_name = "folder-documents"
-        elif name == "Downloads"    : icon_name = "folder-downloads"
-        elif name == "Music"        : icon_name = "folder-music"
-        elif name == "Pictures"     : icon_name = "folder-pictures"
-        elif name == "Videos"       : icon_name = "folder-videos"
-        else                        : icon_name = "folder"
-
-        return icon_name
+    # This method gets a themed icon name
+    def get_bookmark_icon(self, path):
+        if path.startswith("smb") or path.startswith("ssh") or path.startswith("network"):
+            icon_name = "folder-remote"    
+        else:
+            f = gio.File(path)
+            try:   
+                info = f.query_info(gio.FILE_ATTRIBUTE_STANDARD_ICON)
+                icon = info.get_icon()
+                icon_name = icon.get_names()[0]
+            except (gio.Error, NameError):
+                icon_name = "folder"
         
+        return icon_name
     
     # This methind creates a menu
     def update_menu(self, widget = None, data = None):
@@ -59,7 +61,7 @@ class IndicatorPlaces:
         self.ind.set_menu(menu)
 
         # Home folder menu item
-        item = self.create_menu_item("Home Folder", "folder-home") 
+        item = self.create_menu_item("Home Folder", "user-home") 
         item.connect("activate", self.on_bookmark_click, os.getenv('HOME'))
         menu.append(item)
 
@@ -69,7 +71,7 @@ class IndicatorPlaces:
         menu.append(item)
 
         # Computer menu item
-        item = self.create_menu_item("Network", "folder-remote")
+        item = self.create_menu_item("Network", "network")
         item.connect("activate", self.on_bookmark_click, 'network:')
         menu.append(item)
 
@@ -84,13 +86,7 @@ class IndicatorPlaces:
             if not label:
                 label = os.path.basename(os.path.normpath(path))
 
-            # Try to detect relevant icon                
-            if path.startswith("smb") or path.startswith("ssh") or path.startswith("network"):
-                icon_name = "folder-remote"
-            else:
-                icon_name = self.lookup_bookmark_icon(label)
-
-            item = self.create_menu_item(label, icon_name)
+            item = self.create_menu_item(label, self.get_bookmark_icon(path))
             item.connect("activate", self.on_bookmark_click, path)
 
             # Append the item to menu
