@@ -1,6 +1,11 @@
 indicator-places
 ----------------
 
-Very simple app-indicator, wich shows gtk-bookmarks (aka places)
+This is a simple indicator that shows common folders and all bookmarks, the indicator updates automatically if bookmark was added or removed.
 
-Author: Alex Simenduev <shamil.si@gmail.com>
+1. Download the [latest version](https://github.com/shamil/indicator-places/archives/master "latest version")
+2. Extract the files
+3. Run indicator-places.py
+
+***
+Author: Alex Simenduev

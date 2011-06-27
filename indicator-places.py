@@ -59,7 +59,7 @@ class IndicatorPlaces:
         self.ind.set_menu(menu)
 
         # Home folder menu item
-        item = self.create_menu_item("Home Folder", "user-home") 
+        item = self.create_menu_item("Home Folder", "folder-home") 
         item.connect("activate", self.on_bookmark_click, os.getenv('HOME'))
         menu.append(item)
 
