@@ -71,7 +71,7 @@ class IndicatorPlaces:
         menu.append(item)
 
         # Computer menu item
-        item = self.create_menu_item("Network", "network")
+        item = self.create_menu_item("Network", "network-workgroup")
         item.connect("activate", self.on_bookmark_click, 'network:')
         menu.append(item)
 
