@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Very simple app-indicator, shows gtk-bookmarks (aka places)
@@ -11,9 +11,11 @@ import gio
 import signal
 import subprocess
 import appindicator
+import urllib
+
 
 APP_NAME = 'indicator-places'
-APP_VERSION = '0.3'
+APP_VERSION = '0.5'
 
 class IndicatorPlaces:
     BOOKMARKS_PATH = os.getenv('HOME') + '/.gtk-bookmarks'
@@ -36,7 +38,7 @@ class IndicatorPlaces:
     
     # This method gets a themed icon name
     def get_bookmark_icon(self, path):
-        if path.startswith("smb") or path.startswith("ssh") or path.startswith("network"):
+        if path.startswith("smb") or path.startswith("ssh") or path.startswith("ftp") or path.startswith("network"):
             icon_name = "folder-remote"    
         else:
             f = gio.File(path)
@@ -81,6 +83,7 @@ class IndicatorPlaces:
 
         # Populate bookmarks menu items
         for bm in bookmarks:
+            bm = urllib.unquote(bm)
             path, label = bm.strip().partition(' ')[::2]
 
             if not label:
