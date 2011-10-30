@@ -13,7 +13,6 @@ import subprocess
 import appindicator
 import urllib
 
-
 APP_NAME = 'indicator-places'
 APP_VERSION = '0.5'
 
@@ -83,12 +82,12 @@ class IndicatorPlaces:
 
         # Populate bookmarks menu items
         for bm in bookmarks:
-            bm = urllib.unquote(bm)
             path, label = bm.strip().partition(' ')[::2]
 
             if not label:
                 label = os.path.basename(os.path.normpath(path))
 
+            label = urlib.unquote(label)
             item = self.create_menu_item(label, self.get_bookmark_icon(path))
             item.connect("activate", self.on_bookmark_click, path)
 
