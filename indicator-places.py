@@ -87,7 +87,7 @@ class IndicatorPlaces:
             if not label:
                 label = os.path.basename(os.path.normpath(path))
 
-            label = urlib.unquote(label)
+            label = urllib.unquote(label)
             item = self.create_menu_item(label, self.get_bookmark_icon(path))
             item.connect("activate", self.on_bookmark_click, path)
 
