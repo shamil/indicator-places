@@ -44,7 +44,7 @@ class IndicatorPlaces:
             try:   
                 info = f.query_info(gio.FILE_ATTRIBUTE_STANDARD_ICON)
                 icon = info.get_icon()
-                icon_name = icon.get_names()[0]
+                icon_name = icon.get_names()[0] if icon.get_names()[0] != '(null)' else 'folder'
             except (gio.Error, NameError):
                 icon_name = "folder"
         
