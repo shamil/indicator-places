@@ -9,3 +9,5 @@ This is a simple indicator that shows common folders and all bookmarks, the indi
 
 ***
 Author: Alex Simenduev
+
+License: [wtfpl](http://wtfpl.org)
