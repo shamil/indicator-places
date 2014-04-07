@@ -2,10 +2,11 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
-Icon=nautilus
-Exec=/home/shamil/Dropbox/Projects/indicator-places/indicator-places.py
+Icon=system-file-manager
+Exec=/usr/bin/indicator-places.py
 Hidden=false
 NoDisplay=false
 X-GNOME-Autostart-enabled=true
 Name=Places Indicator
 Comment=A very simple indicator which shows GTK Bookmarks
+

@@ -3,6 +3,7 @@
 #
 # Very simple app-indicator, shows gtk-bookmarks (aka places)
 # Author: Alex Simenduev <shamil.si@gmail.com>
+# Modificado para elementaryOS por: http://entornosgnulinux.com/
 #
 
 import os
@@ -20,7 +21,8 @@ class IndicatorPlaces:
     BOOKMARKS_PATH = os.getenv('HOME') + '/.gtk-bookmarks'
 
     def __init__(self):
-        self.ind = appindicator.Indicator("places", "nautilus", appindicator.CATEGORY_APPLICATION_STATUS)
+        #self.ind = appindicator.Indicator("places", "nautilus", appindicator.CATEGORY_APPLICATION_STATUS)
+        self.ind = appindicator.Indicator("places", "system-file-manager", appindicator.CATEGORY_APPLICATION_STATUS)
         self.ind.set_status(appindicator.STATUS_ACTIVE)        
 
         self.update_menu()
@@ -76,6 +78,11 @@ class IndicatorPlaces:
         item.connect("activate", self.on_bookmark_click, 'network:')
         menu.append(item)
 
+        # Trash
+        item = self.create_menu_item("Trash", "user-trash")
+        item.connect("activate", self.on_bookmark_click, 'trash:')
+        menu.append(item)
+
         # Show separator
         item = gtk.SeparatorMenuItem()
         menu.append(item)
@@ -108,8 +115,9 @@ class IndicatorPlaces:
 
     # Open clicked bookmark
     def on_bookmark_click(self, widget, path):
-#       subprocess.Popen('/usr/bin/xdg-open %s' % path, shell = True)
-        subprocess.Popen('/usr/bin/nautilus %s' % path, shell = True)
+        #subprocess.Popen('/usr/bin/nautilus %s' % path, shell = True)
+        subprocess.Popen('/usr/bin/xdg-open %s' % path, shell = True)
+
         
     def on_bookmarks_changed(self, filemonitor, file, other_file, event_type):
         if event_type == gio.FILE_MONITOR_EVENT_CHANGES_DONE_HINT:
