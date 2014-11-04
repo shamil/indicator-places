@@ -18,7 +18,7 @@ APP_NAME = 'indicator-places'
 APP_VERSION = '0.5'
 
 class IndicatorPlaces:
-    BOOKMARKS_PATH = os.getenv('HOME') + '/.gtk-bookmarks'
+    BOOKMARKS_PATH = os.getenv('HOME') + '/.config/gtk-3.0/bookmarks'
 
     def __init__(self):
         #self.ind = appindicator.Indicator("places", "nautilus", appindicator.CATEGORY_APPLICATION_STATUS)
